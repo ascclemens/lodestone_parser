@@ -1,13 +1,12 @@
 use crate::models::character::{
   Character,
   CityState,
-  Clan,
   Gender,
   GrandCompany,
   GrandCompanyInfo,
-  Guardian,
-  Race,
 };
+
+use ffxiv_types::{Race, Clan, Guardian};
 
 use scraper::Html;
 
@@ -41,18 +40,18 @@ pub fn parse(id: u64, html: &str) -> Option<Character> {
 
   let mut rcg = html.select(&*PROFILE_RACE_CLAN_GENDER).next()?.text();
 
-  let race = Race::parse(rcg.next()?)?;
+  let race = Race::from_str(rcg.next()?).ok()?;
 
   let mut clan_gender_str = rcg.next()?.split(" / ");
 
-  let clan = Clan::parse(clan_gender_str.next()?)?;
+  let clan = Clan::from_str(clan_gender_str.next()?).ok()?;
 
   let gender = Gender::parse(clan_gender_str.next()?)?;
 
   let name_day = html.select(&*PROFILE_NAME_DAY).next()?.text().collect();
 
   let guardian_str: String = html.select(&*PROFILE_GUARDIAN).next()?.text().collect();
-  let guardian = Guardian::parse(&guardian_str)?;
+  let guardian = Guardian::from_str(guardian_str.split(",").next()?).ok()?;
 
   let city_state_str: String = html.select(&*PROFILE_CITY_STATE).next()?.text().collect();
   let city_state = CityState::parse(&city_state_str)?;

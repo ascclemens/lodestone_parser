@@ -1,4 +1,4 @@
-use ffxiv_types::World;
+use ffxiv_types::{World, Race, Clan, Guardian};
 
 #[derive(Debug, Serialize)]
 pub struct Character {
@@ -32,42 +32,10 @@ ffxiv_enum!(Gender {
   Female => "♀",
 });
 
-ffxiv_enum!(Race {
-  AuRa => "Au Ra",
-  Elezen => "Elezen",
-  Hyur => "Hyur",
-  Lalafell => "Lalafell",
-  Miqote => "Miqo'te",
-  Roegadyn => "Roegadyn",
-});
-
-ffxiv_enum!(Clan {
-  Raen => "Raen",
-  Xaela => "Xaela",
-  Duskwight => "Duskwight",
-  Wildwood => "Wildwood",
-  Highlander => "Highlander",
-  Midlander => "Midlander",
-  Dunesfolk => "Dunesfolk",
-  Plainsfolk => "Plainsfolk",
-  SeekerOfTheMoon => "Seeker of the Moon",
-  SeekerOfTheSun => "Seeker of the Sun",
-  Hellsguard => "Hellsguard",
-  SeaWolf => "Sea Wolf",
-});
-
 ffxiv_enum!(GrandCompany {
   Flames => "Immortal Flames",
   Maelstrom => "Maelstrom",
   TwinAdders => "Order of the Twin Adder",
-});
-
-ffxiv_enum!(Guardian {
-  Althyk => "Althyk, the Keeper",
-  Halone => "Halone, the Fury",
-  Menphina => "Menphina, the Lover",
-  Oschon => "Oschon, the Wanderer",
-  Rhalgr => "Rhalgr, the Destroyer",
 });
 
 ffxiv_enum!(CityState {
