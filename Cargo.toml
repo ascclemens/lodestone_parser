@@ -1,0 +1,28 @@
+cargo-features = ["edition"]
+
+[package]
+name = "lodestone_parser"
+version = "0.1.0"
+authors = ["Kyle Clemens <git@kyleclemens.com>"]
+
+edition = "2018"
+
+[dependencies]
+cssparser = "0.23"
+failure = "0.1"
+lazy_static = "1"
+scraper = "0.7"
+serde = "1"
+serde_derive = "1"
+serde_json = "1"
+url = "1"
+url_serde = "0.2"
+
+[dependencies.chrono]
+version = "0.4"
+features = ["serde"]
+
+[dependencies.ffxiv_types]
+version = "0.2"
+default-features = false
+features = ["worlds", "with_serde"]
