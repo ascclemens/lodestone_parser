@@ -1,6 +1,15 @@
-use crate::error::*;
+use crate::{
+  error::*,
+  models::{
+    GrandCompany,
+    character::GrandCompanyInfo,
+  },
+};
 
-use scraper::Html;
+use scraper::{
+  Html,
+  node::Element,
+};
 
 macro_rules! selectors {
   ($($name:ident => $selector:expr);+$(;)?) => {
@@ -14,6 +23,7 @@ macro_rules! selectors {
 
 pub mod character;
 pub mod free_company;
+pub mod search;
 
 crate fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> {
   let string = html
@@ -23,4 +33,31 @@ crate fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> 
     .text()
     .collect();
   Ok(string)
+}
+
+crate fn parse_id<'a>(a: &'a Element) -> Result<u64> {
+  let href = a.attr("href").ok_or_else(|| Error::invalid_content("href on link", None))?;
+  let last = href
+    .split('/')
+    .filter(|x| !x.is_empty())
+    .last()
+    .ok_or_else(|| Error::invalid_content("href separated by `/`", Some(&href)))?;
+  last.parse().map_err(Error::InvalidNumber)
+}
+
+crate fn parse_grand_company(text: &str) -> Result<GrandCompanyInfo> {
+  let mut x = text.split(" / ");
+  let gc_str = x
+    .next()
+    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?;
+  let grand_company = GrandCompany::parse(gc_str)
+    .ok_or_else(|| Error::invalid_content("valid grand company", Some(&text)))?;
+  let rank = x
+    .next()
+    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?
+    .to_string();
+  Ok(GrandCompanyInfo {
+    grand_company,
+    rank,
+  })
 }

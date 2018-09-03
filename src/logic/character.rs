@@ -1,14 +1,11 @@
 use crate::{
   error::*,
   logic::plain_parse,
-  models::{
-    GrandCompany,
-    character::{
-      Character,
-      CityState,
-      Gender,
-      GrandCompanyInfo,
-    },
+  models::character::{
+    Character,
+    CityState,
+    Gender,
+    GrandCompanyInfo,
   }
 };
 
@@ -138,20 +135,7 @@ fn parse_grand_company(html: &Html) -> Result<Option<GrandCompanyInfo>> {
     Some(t) => t,
     None => return Ok(None),
   };
-  let mut x = text.split(" / ");
-  let gc_str = x
-    .next()
-    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?;
-  let grand_company = GrandCompany::parse(gc_str)
-    .ok_or_else(|| Error::invalid_content("valid grand company", Some(&text)))?;
-  let rank = x
-    .next()
-    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?
-    .to_string();
-  Ok(Some(GrandCompanyInfo {
-    grand_company,
-    rank,
-  }))
+  crate::logic::parse_grand_company(&text).map(Some)
 }
 
 fn parse_free_company_id(html: &Html) -> Result<Option<u64>> {
@@ -162,11 +146,5 @@ fn parse_free_company_id(html: &Html) -> Result<Option<u64>> {
     Some(e) => e,
     None => return Ok(None),
   };
-  let href = elem.value().attr("href").ok_or_else(|| Error::invalid_content("href on FC link", None))?;
-  let last = href
-    .split('/')
-    .filter(|x| !x.is_empty())
-    .last()
-    .ok_or_else(|| Error::invalid_content("href separated by `/`", Some(&href)))?;
-  last.parse().map(Some).map_err(Error::InvalidNumber)
+  crate::logic::parse_id(elem.value()).map(Some)
 }

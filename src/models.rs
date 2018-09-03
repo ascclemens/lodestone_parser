@@ -26,6 +26,7 @@ macro_rules! ffxiv_enum {
 
 pub mod character;
 pub mod free_company;
+pub mod search;
 
 ffxiv_enum!(
   #[derive(PartialEq, Eq, PartialOrd, Ord)]
