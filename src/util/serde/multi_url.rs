@@ -15,10 +15,6 @@ crate fn serialize<S>(urls: &Vec<Url>, serializer: S) -> Result<S::Ok, S::Error>
 crate fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Url>, D::Error>
   where D: Deserializer<'de>
 {
-
-  #[derive(Deserialize)]
-  struct Wrapper(#[serde(with = "url_serde")] Url);
-
-  let urls = Vec::deserialize(deserializer)?;
-  Ok(urls.into_iter().map(|Wrapper(u)| u).collect())
+  let urls: Vec<url_serde::De<Url>> = Vec::deserialize(deserializer)?;
+  Ok(urls.into_iter().map(|u| u.into_inner()).collect())
 }
