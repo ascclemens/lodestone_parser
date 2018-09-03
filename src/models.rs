@@ -1,5 +1,6 @@
 macro_rules! ffxiv_enum {
-    ($name:ident { $($variant:ident => $str_repr:expr),+$(,)? }) => {
+    ($(#[$meta:meta])* $name:ident { $($variant:ident => $str_repr:expr),+$(,)? }) => {
+      $(#[$meta])*
       #[derive(Debug, Serialize)]
       pub enum $name {
         $($variant,)+

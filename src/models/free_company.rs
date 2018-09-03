@@ -4,6 +4,8 @@ use ffxiv_types::World;
 
 use url::Url;
 
+use std::collections::BTreeMap;
+
 #[derive(Debug, Serialize)]
 pub struct FreeCompany {
   pub name: String,
@@ -11,12 +13,23 @@ pub struct FreeCompany {
   pub slogan: String,
   #[serde(serialize_with = "multi_url")]
   pub crest: Vec<Url>,
+  pub grand_company: GrandCompany,
   pub active_members: u16,
   pub rank: u8,
   pub pvp_rankings: PvpRankings,
   pub formed: DateTime<Utc>,
   pub estate: Option<Estate>,
+  pub reputation: BTreeMap<GrandCompany, u8>,
 }
+
+ffxiv_enum!(
+  #[derive(PartialEq, Eq, PartialOrd, Ord)]
+  GrandCompany {
+    Flames => "Immortal Flames",
+    Maelstrom => "Maelstrom",
+    TwinAdders => "Order of the Twin Adder",
+  }
+);
 
 #[derive(Debug, Serialize)]
 pub struct PvpRankings {

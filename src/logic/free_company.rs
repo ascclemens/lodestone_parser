@@ -1,6 +1,6 @@
 use crate::{
   error::*,
-  models::free_company::{FreeCompany, PvpRankings, Estate},
+  models::free_company::{FreeCompany, PvpRankings, Estate, GrandCompany},
 };
 
 use chrono::{DateTime, Local, TimeZone, Utc};
@@ -11,9 +11,13 @@ use scraper::Html;
 
 use url::Url;
 
-use std::str::FromStr;
+use std::{
+  collections::BTreeMap,
+  str::FromStr,
+};
 
 selectors!(
+  FC_GRAND_COMPANY => "p.entry__freecompany__gc:nth-of-type(1)";
   FC_NAME => ".entry__freecompany__name";
   FC_WORLD => "p.entry__freecompany__gc:nth-of-type(3)";
   FC_SLOGAN => ".freecompany__text__message.freecompany__text";
@@ -22,6 +26,11 @@ selectors!(
   FC_FORMED => "p.freecompany__text:nth-of-type(5) > script";
   FC_ACTIVE_MEMBERS => "p.freecompany__text:nth-of-type(6)";
   FC_RANK => "p.freecompany__text:nth-of-type(7)";
+
+  FC_REPUTATION => ".freecompany__reputation__data";
+  FC_REPUTATION_NAME => ".freecompany__reputation__gcname";
+  FC_REPUTATION_RANK => ".freecompany__reputation__rank";
+
   FC_WEEKLY_RANKING => ".character__ranking__data tr:nth-of-type(1) > th";
   FC_MONTHLY_RANKING => ".character__ranking__data tr:nth-of-type(2) > th";
 
@@ -34,6 +43,7 @@ selectors!(
 pub fn parse(id: u64, html: &str) -> Result<FreeCompany> {
   let html = Html::parse_document(html);
 
+  let grand_company = parse_grand_company(&html)?;
   let name = plain_parse(&html, &*FC_NAME)?;
   let world = parse_world(&html)?;
   let slogan = plain_parse(&html, &*FC_SLOGAN)?;
@@ -46,17 +56,20 @@ pub fn parse(id: u64, html: &str) -> Result<FreeCompany> {
   };
   let formed = parse_formed(&html)?;
   let estate = parse_estate(&html)?;
+  let reputation = parse_reputation(&html)?;
 
   Ok(FreeCompany {
     name,
     world,
     slogan,
     crest,
+    grand_company,
     active_members,
     rank,
     pvp_rankings,
     formed,
     estate,
+    reputation,
   })
 }
 
@@ -152,4 +165,50 @@ fn parse_crest(html: &Html) -> Result<Vec<Url>> {
     .filter_map(|x| x.value().attr("src"))
     .map(|x| Url::parse(x).map_err(Error::InvalidUrl))
     .collect()
+}
+
+fn parse_grand_company(html: &Html) -> Result<GrandCompany> {
+  let text = plain_parse(html, &*FC_GRAND_COMPANY)?;
+  let name = text
+    .split(" <")
+    .next()
+    .ok_or_else(|| Error::invalid_content("grand company and reputation", Some(&text)))?;
+  GrandCompany::parse(&name)
+    .ok_or_else(|| Error::invalid_content("valid grand company", Some(&name)))
+}
+
+fn parse_reputation(html: &Html) -> Result<BTreeMap<GrandCompany, u8>> {
+  let mut reps = BTreeMap::new();
+
+  for elem in html.select(&*FC_REPUTATION).into_iter() {
+    let name: String = elem
+      .select(&*FC_REPUTATION_NAME)
+      .next()
+      .ok_or_else(|| Error::missing_element(&*FC_REPUTATION_NAME))?
+      .text()
+      .collect();
+    let gc = GrandCompany::parse(&name)
+      .ok_or_else(|| Error::invalid_content("valid grand company", Some(&name)))?;
+    let rank_elem = elem
+      .select(&*FC_REPUTATION_RANK)
+      .next()
+      .ok_or_else(|| Error::missing_element(&*FC_REPUTATION_RANK))?;
+    let color_class = rank_elem
+      .value()
+      .classes()
+      .find(|x| x.starts_with("color_"))
+      .ok_or_else(|| Error::invalid_content("color_## class", None))?;
+    let rank: u8 = color_class
+      .split("color_")
+      .nth(1)
+      .ok_or_else(|| Error::invalid_content("color_## class", Some(&color_class)))
+      .and_then(|x| x.parse().map_err(Error::InvalidNumber))?;
+    reps.insert(gc, rank);
+  }
+
+  if reps.len() != 3 {
+    return Err(Error::invalid_content("three grand companies with reputation", None));
+  }
+
+  Ok(reps)
 }
