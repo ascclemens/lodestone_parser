@@ -1,3 +1,5 @@
+use super::GrandCompany;
+
 use ffxiv_types::{World, Race, Clan, Guardian};
 
 #[derive(Debug, Serialize)]
@@ -30,12 +32,6 @@ pub struct GrandCompanyInfo {
 ffxiv_enum!(Gender {
   Male => "♂",
   Female => "♀",
-});
-
-ffxiv_enum!(GrandCompany {
-  Flames => "Immortal Flames",
-  Maelstrom => "Maelstrom",
-  TwinAdders => "Order of the Twin Adder",
 });
 
 ffxiv_enum!(CityState {

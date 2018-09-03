@@ -1,6 +1,8 @@
 use crate::{
   error::*,
-  models::free_company::{FreeCompany, PvpRankings, Estate, GrandCompany},
+  logic::plain_parse,
+  models::GrandCompany,
+  models::free_company::{FreeCompany, PvpRankings, Estate},
 };
 
 use chrono::{DateTime, Local, TimeZone, Utc};
@@ -59,6 +61,7 @@ pub fn parse(id: u64, html: &str) -> Result<FreeCompany> {
   let reputation = parse_reputation(&html)?;
 
   Ok(FreeCompany {
+    id,
     name,
     world,
     slogan,
@@ -71,16 +74,6 @@ pub fn parse(id: u64, html: &str) -> Result<FreeCompany> {
     estate,
     reputation,
   })
-}
-
-fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> {
-  let string = html
-    .select(select)
-    .next()
-    .ok_or(Error::missing_element(select))?
-    .text()
-    .collect();
-  Ok(string)
 }
 
 fn parse_world(html: &Html) -> Result<World> {

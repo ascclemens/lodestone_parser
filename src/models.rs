@@ -26,3 +26,12 @@ macro_rules! ffxiv_enum {
 
 pub mod character;
 pub mod free_company;
+
+ffxiv_enum!(
+  #[derive(PartialEq, Eq, PartialOrd, Ord)]
+  GrandCompany {
+    Flames => "Immortal Flames",
+    Maelstrom => "Maelstrom",
+    TwinAdders => "Order of the Twin Adder",
+  }
+);

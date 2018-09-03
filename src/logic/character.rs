@@ -1,12 +1,18 @@
-use crate::models::character::{
-  Character,
-  CityState,
-  Gender,
-  GrandCompany,
-  GrandCompanyInfo,
+use crate::{
+  error::*,
+  logic::plain_parse,
+  models::{
+    GrandCompany,
+    character::{
+      Character,
+      CityState,
+      Gender,
+      GrandCompanyInfo,
+    },
+  }
 };
 
-use ffxiv_types::{Race, Clan, Guardian};
+use ffxiv_types::{World, Race, Clan, Guardian};
 
 use scraper::Html;
 
@@ -25,69 +31,26 @@ selectors!(
   PROFILE_TEXT => ".character__selfintroduction";
 );
 
-pub fn parse(id: u64, html: &str) -> Option<Character> {
+pub fn parse(id: u64, html: &str) -> Result<Character> {
   let html = Html::parse_document(html);
 
-  let name = html.select(&*PROFILE_NAME).next()?.text().collect();
+  let name = plain_parse(&html, &*PROFILE_NAME)?;
+  let world = parse_world(&html)?;
+  let title = parse_title(&html);
+  let (race, clan, gender) = parse_rcg(&html)?;
 
-  let world_str: String = html.select(&*PROFILE_WORLD).next()?.text().collect();
-  let world = ffxiv_types::World::from_str(&world_str).ok()?;
+  let name_day = plain_parse(&html, &*PROFILE_NAME_DAY)?;
+  let guardian = parse_guardian(&html)?;
 
-  let title: Option<String> = html
-    .select(&*PROFILE_TITLE)
-    .next()
-    .map(|x| x.text().collect());
+  let city_state = parse_city_state(&html)?;
 
-  let mut rcg = html.select(&*PROFILE_RACE_CLAN_GENDER).next()?.text();
+  let grand_company = parse_grand_company(&html)?;
 
-  let race = Race::from_str(rcg.next()?).ok()?;
+  let free_company_id = parse_free_company_id(&html)?;
 
-  let mut clan_gender_str = rcg.next()?.split(" / ");
+  let profile_text = plain_parse(&html, &*PROFILE_TEXT)?.trim().to_string();
 
-  let clan = Clan::from_str(clan_gender_str.next()?).ok()?;
-
-  let gender = Gender::parse(clan_gender_str.next()?)?;
-
-  let name_day = html.select(&*PROFILE_NAME_DAY).next()?.text().collect();
-
-  let guardian_str: String = html.select(&*PROFILE_GUARDIAN).next()?.text().collect();
-  let guardian = Guardian::from_str(guardian_str.split(",").next()?).ok()?;
-
-  let city_state_str: String = html.select(&*PROFILE_CITY_STATE).next()?.text().collect();
-  let city_state = CityState::parse(&city_state_str)?;
-
-  let grand_company: Option<GrandCompanyInfo> = html
-    .select(&*PROFILE_GRAND_COMPANY)
-    .next()
-    .map(|x| x.text().collect::<String>())
-    .and_then(|x| {
-      let mut x = x.split(" / ");
-      let gc = GrandCompany::parse(x.next()?)?;
-      Some(GrandCompanyInfo {
-        grand_company: gc,
-        rank: x.next()?.to_string(),
-      })
-    });
-
-  let free_company_id: Option<u64> = html
-    .select(&*PROFILE_FREE_COMPANY)
-    .next()
-    .and_then(|x| x.value().attr("href"))
-    .and_then(|x| x
-      .split('/')
-      .filter(|x| !x.is_empty())
-      .last())
-    .and_then(|x| x.parse().ok());
-
-  let profile_text = html
-    .select(&*PROFILE_TEXT)
-    .next()?
-    .text()
-    .collect::<String>()
-    .trim()
-    .to_string();
-
-  Some(Character {
+  Ok(Character {
     id,
     name,
     world,
@@ -102,4 +65,108 @@ pub fn parse(id: u64, html: &str) -> Option<Character> {
     free_company_id,
     profile_text,
   })
+}
+
+fn parse_world(html: &Html) -> Result<World> {
+  let world_str = plain_parse(&html, &*PROFILE_WORLD)?;
+  World::from_str(&world_str)
+    .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
+}
+
+fn parse_title(html: &Html) -> Option<String> {
+  html
+    .select(&*PROFILE_TITLE)
+    .next()
+    .map(|x| x.text().collect())
+}
+
+fn parse_rcg(html: &Html) -> Result<(Race, Clan, Gender)> {
+  let mut rcg = html
+    .select(&*PROFILE_RACE_CLAN_GENDER)
+    .next()
+    .ok_or_else(|| Error::missing_element(&*PROFILE_RACE_CLAN_GENDER))?
+    .text();
+
+  let race_str = rcg
+    .next()
+    .ok_or_else(|| Error::invalid_content("first of two parts in race/gender", None))?;
+  let race = Race::from_str(race_str)
+    .map_err(|_| Error::invalid_content("valid race", Some(race_str)))?;
+
+  let clan_gender_str = rcg
+    .next()
+    .ok_or_else(|| Error::invalid_content("second of two parts in race/gender", None))?;
+  let mut clan_gender_split = clan_gender_str.split(" / ");
+
+  let clan_str = clan_gender_split
+    .next()
+    .ok_or_else(|| Error::invalid_content("clan/gender split by `/`", Some(clan_gender_str)))?;
+  let clan = Clan::from_str(clan_str)
+    .map_err(|_| Error::invalid_content("valid clan", Some(clan_str)))?;
+
+  let gender_str = clan_gender_split
+    .next()
+    .ok_or_else(|| Error::invalid_content("clan/gender split by `/`", Some(clan_gender_str)))?;
+  let gender = Gender::parse(gender_str)
+    .ok_or_else(|| Error::invalid_content("valid gender", Some(gender_str)))?;
+
+  Ok((race, clan, gender))
+}
+
+fn parse_guardian(html: &Html) -> Result<Guardian> {
+  let guardian_str = plain_parse(&html, &*PROFILE_GUARDIAN)?;
+  guardian_str
+    .split(",")
+    .next()
+    .ok_or_else(|| Error::invalid_content("first part of guardian", Some(&guardian_str)))
+    .and_then(|x| Guardian::from_str(&x)
+      .map_err(|_| Error::invalid_content("valid guardian", Some(&guardian_str))))
+}
+
+fn parse_city_state(html: &Html) -> Result<CityState> {
+  let city_state_str = plain_parse(&html, &*PROFILE_CITY_STATE)?;
+  CityState::parse(&city_state_str)
+    .ok_or_else(|| Error::invalid_content("valid city-state", Some(&city_state_str)))
+}
+
+fn parse_grand_company(html: &Html) -> Result<Option<GrandCompanyInfo>> {
+  let text = html
+    .select(&*PROFILE_GRAND_COMPANY)
+    .next()
+    .map(|x| x.text().collect::<String>());
+  let text = match text {
+    Some(t) => t,
+    None => return Ok(None),
+  };
+  let mut x = text.split(" / ");
+  let gc_str = x
+    .next()
+    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?;
+  let grand_company = GrandCompany::parse(gc_str)
+    .ok_or_else(|| Error::invalid_content("valid grand company", Some(&text)))?;
+  let rank = x
+    .next()
+    .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?
+    .to_string();
+  Ok(Some(GrandCompanyInfo {
+    grand_company,
+    rank,
+  }))
+}
+
+fn parse_free_company_id(html: &Html) -> Result<Option<u64>> {
+  let elem = match html
+    .select(&*PROFILE_FREE_COMPANY)
+    .next()
+  {
+    Some(e) => e,
+    None => return Ok(None),
+  };
+  let href = elem.value().attr("href").ok_or_else(|| Error::invalid_content("href on FC link", None))?;
+  let last = href
+    .split('/')
+    .filter(|x| !x.is_empty())
+    .last()
+    .ok_or_else(|| Error::invalid_content("href separated by `/`", Some(&href)))?;
+  last.parse().map(Some).map_err(Error::InvalidNumber)
 }

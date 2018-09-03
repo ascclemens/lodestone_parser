@@ -2,6 +2,7 @@
 
 |Key|Value|Description|
 |---|---|---|
+|`id`|`u64`|The Free Company's ID on the Lodestone.|
 |`name`|`String`|The name of the Free Company.|
 |`world`|`String`|The world the Free Company is on.|
 |`slogan`|`String`|The Free Company's slogan.|

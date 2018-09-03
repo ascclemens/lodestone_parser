@@ -1,3 +1,5 @@
+use super::GrandCompany;
+
 use chrono::{DateTime, Utc};
 
 use ffxiv_types::World;
@@ -8,6 +10,7 @@ use std::collections::BTreeMap;
 
 #[derive(Debug, Serialize)]
 pub struct FreeCompany {
+  pub id: u64,
   pub name: String,
   pub world: World,
   pub slogan: String,
@@ -21,15 +24,6 @@ pub struct FreeCompany {
   pub estate: Option<Estate>,
   pub reputation: BTreeMap<GrandCompany, u8>,
 }
-
-ffxiv_enum!(
-  #[derive(PartialEq, Eq, PartialOrd, Ord)]
-  GrandCompany {
-    Flames => "Immortal Flames",
-    Maelstrom => "Maelstrom",
-    TwinAdders => "Order of the Twin Adder",
-  }
-);
 
 #[derive(Debug, Serialize)]
 pub struct PvpRankings {
