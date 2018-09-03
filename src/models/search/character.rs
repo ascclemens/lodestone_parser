@@ -4,7 +4,7 @@ use ffxiv_types::World;
 
 use url::Url;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CharacterSearchItem {
   pub id: u64,
   pub name: String,

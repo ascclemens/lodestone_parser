@@ -2,7 +2,7 @@ use super::GrandCompany;
 
 use ffxiv_types::{World, Race, Clan, Guardian};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Character {
   pub id: u64,
 
@@ -23,7 +23,7 @@ pub struct Character {
   pub profile_text: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct GrandCompanyInfo {
   pub grand_company: GrandCompany,
   pub rank: String,

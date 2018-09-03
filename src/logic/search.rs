@@ -6,6 +6,7 @@ use crate::{
 use scraper::Html;
 
 pub mod character;
+pub mod free_company;
 
 selectors!(
   PAGINATION_TOTAL => ".parts__total";
