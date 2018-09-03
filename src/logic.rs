@@ -8,6 +8,7 @@ use crate::{
 
 use scraper::{
   Html,
+  ElementRef,
   node::Element,
 };
 
@@ -26,6 +27,16 @@ pub mod free_company;
 pub mod search;
 
 crate fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> {
+  let string = html
+    .select(select)
+    .next()
+    .ok_or(Error::missing_element(select))?
+    .text()
+    .collect();
+  Ok(string)
+}
+
+crate fn plain_parse_elem<'a>(html: ElementRef<'a>, select: &scraper::Selector) -> Result<String> {
   let string = html
     .select(select)
     .next()

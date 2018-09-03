@@ -1,5 +1,6 @@
 use crate::{
   error::*,
+  logic::plain_parse_elem as plain_parse,
   models::{
     search::{
       Paginated,
@@ -64,16 +65,6 @@ fn parse_single<'a>(html: ElementRef<'a>) -> Result<CharacterSearchItem> {
     free_company_id,
     face,
   })
-}
-
-fn plain_parse<'a>(html: ElementRef<'a>, select: &scraper::Selector) -> Result<String> {
-  let string = html
-    .select(select)
-    .next()
-    .ok_or(Error::missing_element(select))?
-    .text()
-    .collect();
-  Ok(string)
 }
 
 fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {

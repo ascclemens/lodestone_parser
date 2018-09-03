@@ -10,3 +10,4 @@ pub mod error;
 pub mod logic;
 
 pub mod models;
+crate mod util;
