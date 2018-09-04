@@ -8,6 +8,11 @@ use scraper::Html;
 pub mod character;
 pub mod free_company;
 
+pub use self::{
+  character::parse as parse_character_search,
+  free_company::parse as parse_free_company_search,
+};
+
 selectors!(
   PAGINATION_TOTAL => ".parts__total";
   PAGINATION_PAGES => ".btn__pager__current";

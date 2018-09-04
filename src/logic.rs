@@ -26,6 +26,12 @@ pub mod character;
 pub mod free_company;
 pub mod search;
 
+pub use self::{
+  character::parse as parse_character,
+  free_company::parse as parse_free_company,
+  search::*,
+};
+
 crate fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> {
   let string = html
     .select(select)
