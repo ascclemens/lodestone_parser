@@ -25,7 +25,6 @@ ffxiv_enum!(Active {
   Always => "Always",
   Weekdays => "Weekdays",
   Weekends => "Weekends",
-  Never => "Never",
   NotSpecified => "Not specified",
 });
 
