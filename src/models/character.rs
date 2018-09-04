@@ -2,6 +2,8 @@ use super::GrandCompany;
 
 use ffxiv_types::{World, Race, Clan, Guardian};
 
+use url::Url;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Character {
   pub id: u64,
@@ -21,6 +23,11 @@ pub struct Character {
   pub free_company_id: Option<u64>,
 
   pub profile_text: String,
+
+  #[serde(with = "url_serde")]
+  pub face: Url,
+  #[serde(with = "url_serde")]
+  pub portrait: Url,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

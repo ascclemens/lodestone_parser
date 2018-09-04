@@ -13,9 +13,13 @@ use ffxiv_types::{World, Race, Clan, Guardian};
 
 use scraper::Html;
 
+use url::Url;
+
 use std::str::FromStr;
 
 selectors!(
+  PROFILE_FACE => ".frame__chara__face > img";
+  PROFILE_PORTRAIT => ".character__detail__image > a > img";
   PROFILE_NAME => ".frame__chara__name";
   PROFILE_WORLD => ".frame__chara__world";
   PROFILE_TITLE => ".frame__chara__title";
@@ -47,6 +51,9 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
 
   let profile_text = plain_parse(&html, &*PROFILE_TEXT)?.trim().to_string();
 
+  let face = parse_face(&html)?;
+  let portrait = parse_portrait(&html)?;
+
   Ok(Character {
     id,
     name,
@@ -61,6 +68,8 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
     grand_company,
     free_company_id,
     profile_text,
+    face,
+    portrait,
   })
 }
 
@@ -147,4 +156,28 @@ fn parse_free_company_id(html: &Html) -> Result<Option<u64>> {
     None => return Ok(None),
   };
   crate::logic::parse_id(elem.value()).map(Some)
+}
+
+fn parse_face(html: &Html) -> Result<Url> {
+  let elem = html
+    .select(&*PROFILE_FACE)
+    .next()
+    .ok_or_else(|| Error::missing_element(&*PROFILE_FACE))?;
+  elem
+    .value()
+    .attr("src")
+    .ok_or_else(|| Error::invalid_content("img src attribute", None))
+    .and_then(|x| Url::parse(x).map_err(Error::InvalidUrl))
+}
+
+fn parse_portrait(html: &Html) -> Result<Url> {
+  let elem = html
+    .select(&*PROFILE_PORTRAIT)
+    .next()
+    .ok_or_else(|| Error::missing_element(&*PROFILE_PORTRAIT))?;
+  elem
+    .value()
+    .attr("src")
+    .ok_or_else(|| Error::invalid_content("img src attribute", None))
+    .and_then(|x| Url::parse(x).map_err(Error::InvalidUrl))
 }

@@ -15,6 +15,8 @@
 |`grand_company`|`GrandCompanyInfo?`|The character's Grand Company affiliation and rank. See GrandCompanyInfo section below.|
 |`free_company_id`|`u64?`|The ID of the character's Free Company, if any.|
 |`profile_text`|`String`|The profile text for this character on the Lodestone. If empty, this will be the empty string (`""`).|
+|`face`|`String` (URL)|A URL pointing to an image of the character's face.|
+|`portrait`|`String` (URL)|A URL pointing to a full-body image of the character.|
 
 ## Race
 
