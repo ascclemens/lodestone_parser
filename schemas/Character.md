@@ -45,7 +45,7 @@ An enumerated type represented as a string.
 |Midlander|`"Midlander"`|
 |Dunesfolk|`"Dunesfolk"`|
 |Plainsfolk|`"Plainsfolk"`|
-|Seeker of the Moon|`"SeekerOfTheMoon"`|
+|Keeper of the Moon|`"KeeperOfTheMoon"`|
 |Seeker of the Sun|`"SeekerOfTheSun"`|
 |Hellsguard|`"Hellsguard"`|
 |Sea Wolf|`"SeaWolf"`|
