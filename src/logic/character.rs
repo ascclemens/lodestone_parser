@@ -6,16 +6,21 @@ use crate::{
     CityState,
     Gender,
     GrandCompanyInfo,
+    Job,
+    JobInfo,
   }
 };
 
 use ffxiv_types::{World, Race, Clan, Guardian};
 
-use scraper::Html;
+use scraper::{Html, ElementRef};
 
 use url::Url;
 
-use std::str::FromStr;
+use std::{
+  collections::BTreeMap,
+  str::FromStr,
+};
 
 selectors!(
   PROFILE_FACE => ".frame__chara__face > img";
@@ -30,6 +35,11 @@ selectors!(
   PROFILE_GRAND_COMPANY => "div.character-block:nth-of-type(4) > .character-block__box > .character-block__name";
   PROFILE_FREE_COMPANY => ".character__freecompany__name > h4 > a";
   PROFILE_TEXT => ".character__selfintroduction";
+
+  PROFILE_CLASS => "ul.character__job > li";
+  CLASS_NAME => ".character__job__name";
+  CLASS_LEVEL => ".character__job__level";
+  CLASS_EXP => ".character__job__exp";
 );
 
 pub fn parse(id: u64, html: &str) -> Result<Character> {
@@ -51,6 +61,8 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
 
   let profile_text = plain_parse(&html, &*PROFILE_TEXT)?.trim().to_string();
 
+  let jobs = parse_jobs(&html)?;
+
   let face = parse_face(&html)?;
   let portrait = parse_portrait(&html)?;
 
@@ -68,6 +80,7 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
     grand_company,
     free_company_id,
     profile_text,
+    jobs,
     face,
     portrait,
   })
@@ -180,4 +193,51 @@ fn parse_portrait(html: &Html) -> Result<Url> {
     .attr("src")
     .ok_or_else(|| Error::invalid_content("img src attribute", None))
     .and_then(|x| Url::parse(x).map_err(Error::InvalidUrl))
+}
+
+fn parse_jobs(html: &Html) -> Result<BTreeMap<Job, JobInfo>> {
+  let mut jobs = BTreeMap::new();
+
+  for job in html.select(&*PROFILE_CLASS) {
+    let (job, info) = parse_job(job)?;
+    jobs.insert(job, info);
+  }
+
+  Ok(jobs)
+}
+
+fn parse_job<'a>(elem: ElementRef<'a>) -> Result<(Job, JobInfo)> {
+  let job = crate::logic::plain_parse_elem(elem, &*CLASS_NAME)
+    .and_then(|x| Job::parse(&x).ok_or_else(|| Error::invalid_content("valid job", Some(&x))))?;
+
+  let level_str = crate::logic::plain_parse_elem(elem, &*CLASS_LEVEL)?;
+  let level: Option<u8> = match level_str.as_str() {
+    "-" => None,
+    x => Some(x.parse().map_err(Error::InvalidNumber)?),
+  };
+
+  let exp_str = crate::logic::plain_parse_elem(elem, &*CLASS_EXP)?;
+  let mut exp_split = exp_str.split(" / ");
+
+  let first_exp = exp_split.next().unwrap(); // must have first element
+  let experience: Option<u64> = match first_exp {
+    "-" | "--" => None,
+    x => Some(x.parse().map_err(Error::InvalidNumber)?),
+  };
+
+  let second_exp = exp_split
+    .next()
+    .ok_or_else(|| Error::invalid_content("experience split by ` / `", Some(&exp_str)))?;
+  let next_level_experience: Option<u64> = match second_exp {
+    "-" | "--" => None,
+    x => Some(x.parse().map_err(Error::InvalidNumber)?),
+  };
+
+  let info = JobInfo {
+    level,
+    experience,
+    next_level_experience,
+  };
+
+  Ok((job, info))
 }
