@@ -8,7 +8,7 @@ macro_rules! ffxiv_enum {
 
       impl $name {
         pub fn parse(s: &str) -> Option<Self> {
-          let res = match s {
+          let res = match s.to_lowercase().as_str() {
             $($str_repr => $name::$variant,)+
             _ => return None,
           };
@@ -31,8 +31,8 @@ pub mod search;
 ffxiv_enum!(
   #[derive(PartialEq, Eq, PartialOrd, Ord)]
   GrandCompany {
-    Flames => "Immortal Flames",
-    Maelstrom => "Maelstrom",
-    TwinAdders => "Order of the Twin Adder",
+    Flames => "immortal flames",
+    Maelstrom => "maelstrom",
+    TwinAdders => "order of the twin adder",
   }
 );

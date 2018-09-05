@@ -22,13 +22,13 @@ pub struct FreeCompanySearchItem {
 }
 
 ffxiv_enum!(Active {
-  Always => "Always",
-  Weekdays => "Weekdays",
-  Weekends => "Weekends",
-  NotSpecified => "Not specified",
+  Always => "always",
+  Weekdays => "weekdays",
+  Weekends => "weekends",
+  NotSpecified => "not specified",
 });
 
 ffxiv_enum!(RecruitmentStatus {
-  Open => "Open",
-  Closed => "Closed",
+  Open => "open",
+  Closed => "closed",
 });
