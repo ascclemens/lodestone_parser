@@ -4,9 +4,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Fail)]
 pub enum Error {
-  #[fail(display = "couldn't find expected element on the Lodestone: {}", _0)]
+  #[fail(display = "couldn't find expected element on the lodestone: {}", _0)]
   MissingElement(String),
-  #[fail(display = "the content scraped from the Lodestone was invalid: {}", _0)]
+  #[fail(display = "the content scraped from the lodestone was invalid: {}", _0)]
   InvalidContent(String),
   #[fail(display = "invalid page (1 through {} available)", _0)]
   InvalidPage(u64),
