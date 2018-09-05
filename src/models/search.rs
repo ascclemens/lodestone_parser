@@ -1,7 +1,7 @@
 pub mod character;
 pub mod free_company;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Pagination {
   pub current_page: u64,
   pub total_pages: u64,

@@ -32,6 +32,13 @@ selectors!(
 pub fn parse(html: &str) -> Result<Paginated<CharacterSearchItem>> {
   let html = Html::parse_document(html);
 
+  if crate::logic::search::parse_no_results(&html) {
+    return Ok(Paginated {
+      pagination: Default::default(),
+      results: Default::default(),
+    });
+  }
+
   let pagination = crate::logic::search::parse_pagination(&html)?;
 
   let results: Vec<CharacterSearchItem> = html

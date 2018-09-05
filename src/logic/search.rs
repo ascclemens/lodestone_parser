@@ -16,6 +16,8 @@ pub use self::{
 selectors!(
   PAGINATION_TOTAL => ".parts__total";
   PAGINATION_PAGES => ".btn__pager__current";
+
+  NO_RESULTS => "p.parts__zero";
 );
 
 crate fn parse_pagination(html: &Html) -> Result<Pagination> {
@@ -47,4 +49,11 @@ crate fn parse_pagination(html: &Html) -> Result<Pagination> {
     total_pages,
     total_results,
   })
+}
+
+crate fn parse_no_results<'a>(html: &Html) -> bool {
+  html.select(&*NO_RESULTS)
+    .next()
+    .map(|x| x.text().collect::<String>() == "Your search yielded no results.")
+    .unwrap_or(false)
 }

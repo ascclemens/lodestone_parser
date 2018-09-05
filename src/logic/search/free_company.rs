@@ -38,6 +38,13 @@ selectors!(
 pub fn parse(s: &str) -> Result<Paginated<FreeCompanySearchItem>> {
   let html = Html::parse_document(s);
 
+  if crate::logic::search::parse_no_results(&html) {
+    return Ok(Paginated {
+      pagination: Default::default(),
+      results: Default::default(),
+    });
+  }
+
   let pagination = crate::logic::search::parse_pagination(&html)?;
 
   let results: Vec<FreeCompanySearchItem> = html
