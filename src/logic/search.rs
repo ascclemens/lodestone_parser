@@ -32,8 +32,12 @@ crate fn parse_pagination(html: &Html) -> Result<Pagination> {
     .map_err(Error::InvalidNumber)?;
 
   let (total_pages, current_page) = if parse_no_results(html) {
-    let total_pages = (total_results as f32 / LODESTONE_PER_PAGE).ceil() as u64;
-    let current_page = 0;
+    let total_pages = if total_results > 0 {
+      (total_results as f32 / LODESTONE_PER_PAGE).ceil() as u64
+    } else {
+      1
+    };
+    let current_page = if total_results > 0 { 0 } else { 1 };
     (total_pages, current_page)
   } else {
     let pages_str = crate::logic::plain_parse(&html, &*PAGINATION_PAGES)?;
