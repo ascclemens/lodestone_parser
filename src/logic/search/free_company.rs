@@ -114,6 +114,7 @@ fn parse_estate_built<'a>(html: ElementRef<'a>) -> Result<bool> {
   let built = match estate_built.as_str() {
     "Estate Built" => true,
     "No Estate or Plot" => false,
+    "Plot Only" => false, // FIXME: use enum for this
     _ => return Err(Error::invalid_content("`Estate Built` or `No Estate or Plot`", Some(&estate_built))),
   };
   Ok(built)
