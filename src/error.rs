@@ -8,6 +8,8 @@ pub enum Error {
   MissingElement(String),
   #[fail(display = "the content scraped from the Lodestone was invalid: {}", _0)]
   InvalidContent(String),
+  #[fail(display = "invalid page (1 through {} available)", _0)]
+  InvalidPage(u64),
 
   #[fail(display = "invalid number: {}", _0)]
   InvalidNumber(std::num::ParseIntError),
