@@ -10,6 +10,7 @@ pub struct CharacterSearchItem {
   pub name: String,
   pub world: World,
   pub grand_company: Option<GrandCompanyInfo>,
+  #[serde(with = "crate::util::serde::opt_u64_str")]
   pub free_company_id: Option<u64>,
   #[serde(with = "url_serde")]
   pub face: Url,

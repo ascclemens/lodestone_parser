@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FreeCompany {
+  #[serde(with = "crate::util::serde::u64_str")]
   pub id: u64,
   pub name: String,
   pub world: World,

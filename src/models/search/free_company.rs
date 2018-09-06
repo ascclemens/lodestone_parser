@@ -8,6 +8,7 @@ use url::Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FreeCompanySearchItem {
+  #[serde(with = "crate::util::serde::u64_str")]
   pub id: u64,
   pub name: String,
   pub world: World,

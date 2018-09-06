@@ -22,6 +22,7 @@ pub struct Character {
   pub city_state: CityState,
 
   pub grand_company: Option<GrandCompanyInfo>,
+  #[serde(with = "crate::util::serde::opt_u64_str")]
   pub free_company_id: Option<u64>,
 
   pub profile_text: String,
