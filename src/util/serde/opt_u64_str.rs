@@ -4,7 +4,7 @@ crate fn serialize<S>(u: &Option<u64>, serializer: S) -> Result<S::Ok, S::Error>
   where S: Serializer,
 {
   match *u {
-    Some(u) => serializer.serialize_u64(u),
+    Some(u) => serializer.serialize_str(&u.to_string()),
     None => serializer.serialize_none(),
   }
 }
