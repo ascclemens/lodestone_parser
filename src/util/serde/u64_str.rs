@@ -9,8 +9,8 @@ crate fn serialize<S>(u: &u64, serializer: S) -> Result<S::Ok, S::Error>
 crate fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
   where D: Deserializer<'de>
 {
-  let s: &str = Deserialize::deserialize(deserializer)?;
+  let s: String = Deserialize::deserialize(deserializer)?;
   s
     .parse()
-    .map_err(|_| serde::de::Error::invalid_value(Unexpected::Str(s), &"string containing a u64"))
+    .map_err(|_| serde::de::Error::invalid_value(Unexpected::Str(&s), &"string containing a u64"))
 }
