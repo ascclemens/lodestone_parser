@@ -1,4 +1,4 @@
-#![feature(macro_at_most_once_rep)]
+#![feature(macro_at_most_once_rep, crate_visibility_modifier)]
 
 #[cfg(feature = "logic")] #[macro_use] extern crate failure;
 #[cfg(feature = "logic")] #[macro_use] extern crate lazy_static;
