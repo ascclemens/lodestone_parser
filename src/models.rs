@@ -2,6 +2,7 @@ macro_rules! ffxiv_enum {
     ($(#[$meta:meta])* $name:ident { $($variant:ident => $str_repr:expr),+$(,)? }) => {
       $(#[$meta])*
       #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+      #[serde(rename_all = "snake_case")]
       pub enum $name {
         $($variant,)+
       }
