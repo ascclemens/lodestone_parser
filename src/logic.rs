@@ -67,14 +67,14 @@ crate fn parse_grand_company(text: &str) -> Result<GrandCompanyInfo> {
   let gc_str = x
     .next()
     .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?;
-  let grand_company = GrandCompany::parse(gc_str)
+  let name = GrandCompany::parse(gc_str)
     .ok_or_else(|| Error::invalid_content("valid grand company", Some(&text)))?;
   let rank = x
     .next()
     .ok_or_else(|| Error::invalid_content("gc/rank separated by `/`", Some(&text)))?
     .to_string();
   Ok(GrandCompanyInfo {
-    grand_company,
+    name,
     rank,
   })
 }

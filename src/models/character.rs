@@ -37,7 +37,7 @@ pub struct Character {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GrandCompanyInfo {
-  pub grand_company: GrandCompany,
+  pub name: GrandCompany,
   pub rank: String,
 }
 
