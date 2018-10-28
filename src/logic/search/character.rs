@@ -50,7 +50,7 @@ pub fn parse(html: &str) -> Result<Paginated<CharacterSearchItem>> {
   })
 }
 
-fn parse_single<'a>(html: ElementRef<'a>) -> Result<CharacterSearchItem> {
+crate fn parse_single<'a>(html: ElementRef<'a>) -> Result<CharacterSearchItem> {
   let id = parse_id(html)?;
 
   let name = plain_parse(html, &*ITEM_NAME)?;

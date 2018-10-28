@@ -24,6 +24,7 @@ macro_rules! selectors {
 
 pub mod character;
 pub mod free_company;
+pub mod linkshell;
 pub mod search;
 
 pub use self::{

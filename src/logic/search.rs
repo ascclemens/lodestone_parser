@@ -7,6 +7,7 @@ use scraper::Html;
 
 pub mod character;
 pub mod free_company;
+pub mod linkshell;
 
 pub use self::{
   character::parse as parse_character_search,
