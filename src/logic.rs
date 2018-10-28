@@ -30,6 +30,7 @@ pub mod search;
 pub use self::{
   character::parse as parse_character,
   free_company::parse as parse_free_company,
+  linkshell::parse as parse_linkshell,
   search::*,
 };
 

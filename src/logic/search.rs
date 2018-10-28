@@ -12,6 +12,7 @@ pub mod linkshell;
 pub use self::{
   character::parse as parse_character_search,
   free_company::parse as parse_free_company_search,
+  linkshell::parse as parse_linkshell_search,
 };
 
 selectors!(
