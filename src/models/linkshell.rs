@@ -19,6 +19,14 @@ pub struct LinkshellMember {
   pub role: Option<Role>,
 }
 
+impl std::ops::Deref for LinkshellMember {
+  type Target = CharacterSearchItem;
+
+  fn deref(&self) -> &Self::Target {
+    &self.character
+  }
+}
+
 ffxiv_enum!(Role {
   Master => "master",
   Leader => "leader",
