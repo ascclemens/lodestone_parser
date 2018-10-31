@@ -1,7 +1,7 @@
 macro_rules! ffxiv_enum {
   ($(#[$meta:meta])* $name:ident { $($variant:ident => $str_repr:expr),+$(,)? }) => {
     $(#[$meta])*
-    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+    #[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
     pub enum $name {
       $($variant,)+
     }
@@ -30,7 +30,7 @@ pub mod linkshell;
 pub mod search;
 
 ffxiv_enum!(
-  #[derive(PartialEq, Eq, PartialOrd, Ord)]
+  #[derive(Eq, PartialOrd, Ord)]
   GrandCompany {
     Flames => "immortal flames",
     Maelstrom => "maelstrom",

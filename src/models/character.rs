@@ -35,7 +35,7 @@ pub struct Character {
   pub portrait: Url,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct GrandCompanyInfo {
   pub name: GrandCompany,
   pub rank: String,
@@ -60,7 +60,7 @@ ffxiv_enum!(CityState {
 });
 
 ffxiv_enum!(
-  #[derive(PartialEq, Eq, PartialOrd, Ord)]
+  #[derive(Eq, PartialOrd, Ord)]
   Job {
     Gladiator => "gladiator",
     Paladin => "paladin",
