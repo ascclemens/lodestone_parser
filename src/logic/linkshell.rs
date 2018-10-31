@@ -94,3 +94,61 @@ fn parse_role<'a>(html: ElementRef<'a>) -> Result<Option<Role>> {
     .ok_or_else(|| Error::invalid_content("valid linkshell role", Some(role_str.trim())))
     .map(Some)
 }
+
+#[cfg(test)]
+mod test {
+  use crate::models::{
+    GrandCompany,
+    character::GrandCompanyInfo,
+    linkshell::{Linkshell, Role}
+  };
+  use super::parse;
+
+  use ffxiv_types::World;
+
+  lazy_static! {
+    static ref PARSED: crate::error::Result<Linkshell> = {
+      let html = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/html/Linkshells/lala world.html"));
+      parse(20547673299957974, &html)
+    };
+  }
+
+  #[test]
+  fn is_ok() {
+    assert!(PARSED.is_ok());
+  }
+
+  #[test]
+  fn metadata() {
+    let ls = PARSED.as_ref().unwrap();
+    assert_eq!(20547673299957974, ls.id);
+    assert_eq!("lala world", ls.name);
+    assert_eq!(World::Adamantoise, ls.world);
+    assert_eq!(110, ls.active_members);
+    assert_eq!(50, ls.members.results.len());
+    assert_eq!(1, ls.members.pagination.current_page);
+    assert_eq!(3, ls.members.pagination.total_pages);
+    assert_eq!(110, ls.members.pagination.total_results);
+  }
+
+  #[test]
+  fn prinny() {
+    let prinny = &PARSED.as_ref().unwrap().members.results[0];
+    assert_eq!(6500087, prinny.id);
+    assert_eq!("Prinny Dawnbringer", prinny.name);
+    assert_eq!(World::Adamantoise, prinny.world);
+    assert_eq!(
+      Some(GrandCompanyInfo {
+        name: GrandCompany::Maelstrom,
+        rank: "Storm Captain".into(),
+      }),
+      prinny.grand_company,
+    );
+    assert_eq!(Some(9233645873504743773), prinny.free_company_id);
+    assert_eq!(
+      "https://img2.finalfantasyxiv.com/f/8089bddc032754e155ff2f75925c8c26_1f5fd239b885860b7c2bfc72ad1d97effc0_96x96.jpg?1539579307",
+      prinny.face.as_str(),
+    );
+    assert_eq!(Some(Role::Master), prinny.role);
+  }
+}
