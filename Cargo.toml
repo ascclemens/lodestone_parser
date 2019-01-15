@@ -16,11 +16,10 @@ logic = [
 ]
 
 [dependencies]
-# scraper relies on 0.23, which is not newest
-cssparser = { version = "0.23", optional = true }
+cssparser = { version = "0.24", optional = true }
 failure = { version = "0.1", optional = true }
 lazy_static = { version = "1", optional = true }
-scraper = { version = "0.7", optional = true }
+scraper = { version = "0.9", optional = true }
 serde = "1"
 serde_derive = "1"
 serde_json = "1"
