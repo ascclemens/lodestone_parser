@@ -222,7 +222,7 @@ fn parse_job<'a>(elem: ElementRef<'a>) -> Result<(Job, JobInfo)> {
   let first_exp = exp_split.next().unwrap(); // must have first element
   let experience: Option<u64> = match first_exp {
     "-" | "--" => None,
-    x => Some(x.parse().map_err(Error::InvalidNumber)?),
+    x => Some(x.replace(",", "").parse().map_err(Error::InvalidNumber)?),
   };
 
   let second_exp = exp_split
@@ -230,7 +230,7 @@ fn parse_job<'a>(elem: ElementRef<'a>) -> Result<(Job, JobInfo)> {
     .ok_or_else(|| Error::invalid_content("experience split by ` / `", Some(&exp_str)))?;
   let next_level_experience: Option<u64> = match second_exp {
     "-" | "--" => None,
-    x => Some(x.parse().map_err(Error::InvalidNumber)?),
+    x => Some(x.replace(",", "").parse().map_err(Error::InvalidNumber)?),
   };
 
   let info = JobInfo {

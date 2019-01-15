@@ -86,6 +86,7 @@ ffxiv_enum!(
     Arcanist => "arcanist",
     Summoner => "summoner",
     RedMage => "red mage",
+    BlueMage => "blue mage",
 
     Carpenter => "carpenter",
     Blacksmith => "blacksmith",
