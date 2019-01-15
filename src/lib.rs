@@ -1,6 +1,6 @@
-#![feature(macro_at_most_once_rep, crate_visibility_modifier)]
+#![feature(crate_visibility_modifier)]
 
-#[cfg(feature = "logic")] #[macro_use] extern crate failure;
+#[cfg(feature = "logic")] extern crate failure;
 #[cfg(feature = "logic")] #[macro_use] extern crate lazy_static;
 pub extern crate ffxiv_types;
 #[macro_use] extern crate serde_derive;
