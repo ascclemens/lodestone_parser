@@ -1,6 +1,6 @@
 [package]
 name = "lodestone_parser"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kyle Clemens <git@kyleclemens.com>"]
 
 edition = "2018"
