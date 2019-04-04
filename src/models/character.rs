@@ -30,7 +30,9 @@ pub struct Character {
 
   pub jobs: BTreeMap<Job, JobInfo>,
 
+  #[cfg_attr(feature = "with_serde", serde(default))]
   pub mounts: Vec<Mount>,
+  #[cfg_attr(feature = "with_serde", serde(default))]
   pub minions: Vec<Minion>,
 
   #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
