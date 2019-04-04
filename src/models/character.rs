@@ -6,6 +6,7 @@ use url::Url;
 
 use std::collections::BTreeMap;
 
+#[derive(Debug)]
 #[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct Character {
   pub id: u64,
