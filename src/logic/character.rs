@@ -8,6 +8,8 @@ use crate::{
     GrandCompanyInfo,
     Job,
     JobInfo,
+    Minion,
+    Mount,
   }
 };
 
@@ -35,6 +37,8 @@ selectors!(
   PROFILE_GRAND_COMPANY => "div.character-block:nth-of-type(4) > .character-block__box > .character-block__name";
   PROFILE_FREE_COMPANY => ".character__freecompany__name > h4 > a";
   PROFILE_TEXT => ".character__selfintroduction";
+  PROFILE_MOUNT => ".character__mounts > .character__icon__list .character__item_icon.js__tooltip";
+  PROFILE_MINION => ".character__minion > .character__icon__list .character__item_icon.js__tooltip";
 
   PROFILE_CLASS => "ul.character__job > li";
   CLASS_NAME => ".character__job__name";
@@ -63,6 +67,9 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
 
   let jobs = parse_jobs(&html)?;
 
+  let mounts = parse_mounts(&html)?;
+  let minions = parse_minions(&html)?;
+
   let face = parse_face(&html)?;
   let portrait = parse_portrait(&html)?;
 
@@ -81,6 +88,8 @@ pub fn parse(id: u64, html: &str) -> Result<Character> {
     free_company_id,
     profile_text,
     jobs,
+    mounts,
+    minions,
     face,
     portrait,
   })
@@ -240,4 +249,37 @@ fn parse_job(elem: ElementRef) -> Result<(Job, JobInfo)> {
   };
 
   Ok((job, info))
+}
+
+fn parse_minions(html: &Html) -> Result<Vec<Minion>> {
+  html.select(&*PROFILE_MINION)
+    .map(parse_icon)
+    .map(|res| res.map(|(name, icon)| Minion { name, icon }))
+    .collect()
+}
+
+fn parse_mounts(html: &Html) -> Result<Vec<Mount>> {
+  html.select(&*PROFILE_MOUNT)
+    .map(parse_icon)
+    .map(|res| res.map(|(name, icon)| Mount { name, icon }))
+    .collect()
+}
+
+fn parse_icon(elem: ElementRef) -> Result<(String, Url)> {
+  let name = elem
+    .value()
+    .attr("data-tooltip")
+    .ok_or_else(|| Error::invalid_content("data-tooltip on icon", None))?
+    .to_string();
+  let image = elem
+    .children()
+    .flat_map(|c| c.value().as_element())
+    .find(|c| c.name() == "img")
+    .ok_or_else(|| Error::invalid_content("img in icon", None))?
+    .attr("src")
+    .ok_or_else(|| Error::invalid_content("img src in icon", None))?;
+
+  let icon = Url::from_str(image).map_err(Error::InvalidUrl)?;
+
+  Ok((name, icon))
 }

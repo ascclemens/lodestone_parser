@@ -30,6 +30,9 @@ pub struct Character {
 
   pub jobs: BTreeMap<Job, JobInfo>,
 
+  pub mounts: Vec<Mount>,
+  pub minions: Vec<Minion>,
+
   #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub face: Url,
   #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
@@ -49,6 +52,22 @@ pub struct JobInfo {
   pub level: Option<u8>,
   pub experience: Option<u64>,
   pub next_level_experience: Option<u64>,
+}
+
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
+pub struct Mount {
+  pub name: String,
+  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
+  pub icon: Url,
+}
+
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
+pub struct Minion {
+  pub name: String,
+  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
+  pub icon: Url,
 }
 
 ffxiv_enum!(Gender {
