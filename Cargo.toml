@@ -13,6 +13,7 @@ logic = [
   "failure",
   "lazy_static",
   "scraper",
+  "with_serde",
 ]
 with_serde = [
   "serde",
