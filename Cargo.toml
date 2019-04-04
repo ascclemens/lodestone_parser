@@ -21,10 +21,12 @@ with_serde = [
 ]
 
 [dependencies]
-cssparser = { version = "0.24", optional = true }
+cssparser = { version = "0.25", optional = true }
 failure = { version = "0.1", optional = true }
 lazy_static = { version = "1", optional = true }
-scraper = { version = "0.9", optional = true }
+# scraper = { version = "0.9", optional = true }
+# switch back to main once pr is merged updating dependencies
+scraper = { git = "https://github.com/jkcclemens/scraper", optional = true }
 serde = { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
 url = "1"
