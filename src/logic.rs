@@ -14,6 +14,8 @@ use scraper::{
 
 macro_rules! selectors {
   ($($name:ident => $selector:expr);+$(;)?) => {
+    use lazy_static::lazy_static;
+
     lazy_static! {
       $(
         static ref $name: scraper::Selector = scraper::Selector::parse($selector).unwrap();
@@ -38,7 +40,7 @@ crate fn plain_parse(html: &Html, select: &scraper::Selector) -> Result<String> 
   let string = html
     .select(select)
     .next()
-    .ok_or(Error::missing_element(select))?
+    .ok_or_else(|| Error::missing_element(select))?
     .text()
     .collect();
   Ok(string)
@@ -48,13 +50,13 @@ crate fn plain_parse_elem<'a>(html: ElementRef<'a>, select: &scraper::Selector) 
   let string = html
     .select(select)
     .next()
-    .ok_or(Error::missing_element(select))?
+    .ok_or_else(|| Error::missing_element(select))?
     .text()
     .collect();
   Ok(string)
 }
 
-crate fn parse_id<'a>(a: &'a Element) -> Result<u64> {
+crate fn parse_id(a: &Element) -> Result<u64> {
   let href = a.attr("href").ok_or_else(|| Error::invalid_content("href on link", None))?;
   let last = href
     .split('/')

@@ -1,21 +1,21 @@
 use super::GrandCompany;
 
 use chrono::{DateTime, Utc};
-
 use ffxiv_types::World;
-
+#[cfg(feature = "with_serde")] use serde_derive::{Deserialize, Serialize};
 use url::Url;
 
 use std::collections::BTreeMap;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct FreeCompany {
-  #[serde(with = "crate::util::serde::u64_str")]
+  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::u64_str"))]
   pub id: u64,
   pub name: String,
   pub world: World,
   pub slogan: String,
-  #[serde(with = "crate::util::serde::multi_url")]
+  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::multi_url"))]
   pub crest: Vec<Url>,
   pub grand_company: GrandCompany,
   pub active_members: u16,
@@ -26,13 +26,15 @@ pub struct FreeCompany {
   pub reputation: BTreeMap<GrandCompany, u8>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct PvpRankings {
   pub weekly: Option<u64>,
   pub monthly: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct Estate {
   pub name: String,
   pub address: String,

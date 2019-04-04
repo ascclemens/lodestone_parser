@@ -6,7 +6,7 @@ authors = ["Kyle Clemens <git@kyleclemens.com>"]
 edition = "2018"
 
 [features]
-default = ["logic"]
+default = ["logic", "with_serde"]
 
 logic = [
   "cssparser",
@@ -14,23 +14,37 @@ logic = [
   "lazy_static",
   "scraper",
 ]
+with_serde = [
+  "serde",
+  "serde_derive",
+  "url_serde",
+]
 
 [dependencies]
 cssparser = { version = "0.24", optional = true }
 failure = { version = "0.1", optional = true }
 lazy_static = { version = "1", optional = true }
 scraper = { version = "0.9", optional = true }
-serde = "1"
-serde_derive = "1"
-serde_json = "1"
+serde = { version = "1", optional = true }
+serde_derive = { version = "1", optional = true }
 url = "1"
-url_serde = "0.2"
+url_serde = { version = "0.2", optional = true }
 
-[dependencies.chrono]
+# with serde
+[target.'cfg(feature = "with_serde")'.dependencies.chrono]
 version = "0.4"
 features = ["serde"]
 
-[dependencies.ffxiv_types]
+[target.'cfg(feature = "with_serde")'.dependencies.ffxiv_types]
 version = "1"
 default-features = false
 features = ["worlds", "races", "clans", "guardians", "with_serde"]
+
+# without serde
+[target.'cfg(not(feature = "with_serde"))'.dependencies.chrono]
+version = "0.4"
+
+[target.'cfg(not(feature = "with_serde"))'.dependencies.ffxiv_types]
+version = "1"
+default-features = false
+features = ["worlds", "races", "clans", "guardians"]

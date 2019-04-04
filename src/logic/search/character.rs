@@ -41,7 +41,7 @@ pub fn parse(html: &str) -> Result<Paginated<CharacterSearchItem>> {
 
   let results: Vec<CharacterSearchItem> = html
     .select(&*ITEM_ENTRY)
-    .map(|x| parse_single(x))
+    .map(parse_single)
     .collect::<Result<_>>()?;
 
   Ok(Paginated {
@@ -50,7 +50,7 @@ pub fn parse(html: &str) -> Result<Paginated<CharacterSearchItem>> {
   })
 }
 
-crate fn parse_single<'a>(html: ElementRef<'a>) -> Result<CharacterSearchItem> {
+crate fn parse_single(html: ElementRef) -> Result<CharacterSearchItem> {
   let id = parse_id(html)?;
 
   let name = plain_parse(html, &*ITEM_NAME)?;
@@ -72,7 +72,7 @@ crate fn parse_single<'a>(html: ElementRef<'a>) -> Result<CharacterSearchItem> {
   })
 }
 
-fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
+fn parse_id(html: ElementRef) -> Result<u64> {
   let e = html
     .select(&*ITEM_ID)
     .next()
@@ -80,13 +80,13 @@ fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
   crate::logic::parse_id(e.value())
 }
 
-fn parse_world<'a>(html: ElementRef<'a>) -> Result<World> {
+fn parse_world(html: ElementRef) -> Result<World> {
   let world_str = plain_parse(html, &*ITEM_WORLD)?;
   World::from_str(&world_str)
     .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
 }
 
-fn parse_free_company_id<'a>(html: ElementRef<'a>) -> Result<Option<u64>> {
+fn parse_free_company_id(html: ElementRef) -> Result<Option<u64>> {
   let elem = match html
     .select(&*ITEM_FREE_COMPANY)
     .next()
@@ -97,7 +97,7 @@ fn parse_free_company_id<'a>(html: ElementRef<'a>) -> Result<Option<u64>> {
   crate::logic::parse_id(elem.value()).map(Some)
 }
 
-fn parse_grand_company<'a>(html: ElementRef<'a>) -> Result<Option<GrandCompanyInfo>> {
+fn parse_grand_company(html: ElementRef) -> Result<Option<GrandCompanyInfo>> {
   let text = html
     .select(&*ITEM_GRAND_COMPANY)
     .next()
@@ -109,7 +109,7 @@ fn parse_grand_company<'a>(html: ElementRef<'a>) -> Result<Option<GrandCompanyIn
   crate::logic::parse_grand_company(text).map(Some)
 }
 
-fn parse_face<'a>(html: ElementRef<'a>) -> Result<Url> {
+fn parse_face(html: ElementRef) -> Result<Url> {
   let face_elem = html
     .select(&*ITEM_FACE)
     .next()

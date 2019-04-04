@@ -1,9 +1,7 @@
 #![feature(crate_visibility_modifier)]
+#![allow(clippy::unreadable_literal)]
 
-#[cfg(feature = "logic")] extern crate failure;
-#[cfg(feature = "logic")] #[macro_use] extern crate lazy_static;
 pub extern crate ffxiv_types;
-#[macro_use] extern crate serde_derive;
 
 #[cfg(feature = "logic")]
 pub mod error;

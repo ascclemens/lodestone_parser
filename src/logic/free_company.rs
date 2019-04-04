@@ -97,11 +97,11 @@ fn parse_pvp_rank(html: &Html, select: &scraper::Selector) -> Result<Option<u64>
   let rank_str = plain_parse(html, select)?;
 
   let rank = rank_str
-    .split(":")
+    .split(':')
     .nth(1)
     .ok_or_else(|| Error::invalid_content("colon-separated text", Some(&rank_str)))
     .and_then(|x| x
-      .split(" ")
+      .split(' ')
       .next()
       .ok_or_else(|| Error::invalid_content("space-separated text", Some(&rank_str))))?;
 
@@ -119,16 +119,16 @@ fn parse_formed(html: &Html) -> Result<DateTime<Utc>> {
   let script = html
     .select(&*FC_FORMED)
     .next()
-    .ok_or(Error::missing_element(&*FC_FORMED))?
+    .ok_or_else(|| Error::missing_element(&*FC_FORMED))?
     .inner_html();
 
   let timestamp = script
     .split("strftime(")
     .nth(1)
-    .ok_or(Error::invalid_content("strftime call", Some(&script)))?
-    .split(",")
+    .ok_or_else(|| Error::invalid_content("strftime call", Some(&script)))?
+    .split(',')
     .next()
-    .ok_or(Error::invalid_content("comma-separated strftime call", Some(&script)))?;
+    .ok_or_else(|| Error::invalid_content("comma-separated strftime call", Some(&script)))?;
   let timestamp: i64 = timestamp.parse().map_err(Error::InvalidNumber)?;
 
   let utc = Local.timestamp(timestamp, 0).with_timezone(&Utc);
@@ -154,7 +154,6 @@ fn parse_estate(html: &Html) -> Result<Option<Estate>> {
 
 fn parse_crest(html: &Html) -> Result<Vec<Url>> {
   html.select(&*FC_CREST)
-    .into_iter()
     .filter_map(|x| x.value().attr("src"))
     .map(|x| Url::parse(x).map_err(Error::InvalidUrl))
     .collect()
@@ -173,7 +172,7 @@ fn parse_grand_company(html: &Html) -> Result<GrandCompany> {
 fn parse_reputation(html: &Html) -> Result<BTreeMap<GrandCompany, u8>> {
   let mut reps = BTreeMap::new();
 
-  for elem in html.select(&*FC_REPUTATION).into_iter() {
+  for elem in html.select(&*FC_REPUTATION) {
     let name: String = elem
       .select(&*FC_REPUTATION_NAME)
       .next()

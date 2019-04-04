@@ -135,7 +135,7 @@ fn parse_rcg(html: &Html) -> Result<(Race, Clan, Gender)> {
 fn parse_guardian(html: &Html) -> Result<Guardian> {
   let guardian_str = plain_parse(&html, &*PROFILE_GUARDIAN)?;
   guardian_str
-    .split(",")
+    .split(',')
     .next()
     .ok_or_else(|| Error::invalid_content("first part of guardian", Some(&guardian_str)))
     .and_then(|x| Guardian::from_str(&x)
@@ -206,7 +206,7 @@ fn parse_jobs(html: &Html) -> Result<BTreeMap<Job, JobInfo>> {
   Ok(jobs)
 }
 
-fn parse_job<'a>(elem: ElementRef<'a>) -> Result<(Job, JobInfo)> {
+fn parse_job(elem: ElementRef) -> Result<(Job, JobInfo)> {
   let job = crate::logic::plain_parse_elem(elem, &*CLASS_NAME)
     .and_then(|x| Job::parse(&x).ok_or_else(|| Error::invalid_content("valid job", Some(&x))))?;
 

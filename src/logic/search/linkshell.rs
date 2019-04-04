@@ -36,7 +36,7 @@ pub fn parse(s: &str) -> Result<Paginated<LinkshellSearchItem>> {
 
   let results: Vec<LinkshellSearchItem> = html
     .select(&*ITEM_ENTRY)
-    .map(|x| parse_single(x))
+    .map(parse_single)
     .collect::<Result<_>>()?;
 
   Ok(Paginated {
@@ -45,7 +45,7 @@ pub fn parse(s: &str) -> Result<Paginated<LinkshellSearchItem>> {
   })
 }
 
-fn parse_single<'a>(html: ElementRef<'a>) -> Result<LinkshellSearchItem> {
+fn parse_single(html: ElementRef) -> Result<LinkshellSearchItem> {
   let id = parse_id(html)?;
   let name = plain_parse(html, &*ITEM_NAME)?;
   let world = parse_world(html)?;
@@ -59,7 +59,7 @@ fn parse_single<'a>(html: ElementRef<'a>) -> Result<LinkshellSearchItem> {
   })
 }
 
-fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
+fn parse_id(html: ElementRef) -> Result<u64> {
   let e = html
     .select(&*ITEM_ID)
     .next()
@@ -67,13 +67,13 @@ fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
   crate::logic::parse_id(e.value())
 }
 
-fn parse_world<'a>(html: ElementRef<'a>) -> Result<World> {
+fn parse_world(html: ElementRef) -> Result<World> {
   let world_str = plain_parse(html, &*ITEM_WORLD)?;
   World::from_str(&world_str)
     .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
 }
 
-fn parse_active_members<'a>(html: ElementRef<'a>) -> Result<u8> {
+fn parse_active_members(html: ElementRef) -> Result<u8> {
   plain_parse(html, &*ITEM_ACTIVE_MEMBERS)
     .and_then(|x| x.parse().map_err(Error::InvalidNumber))
 }

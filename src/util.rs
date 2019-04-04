@@ -1,1 +1,1 @@
-pub mod serde;
+#[cfg(feature = "with_serde")] pub mod serde;

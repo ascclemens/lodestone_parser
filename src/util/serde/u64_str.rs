@@ -1,5 +1,6 @@
 use serde::{Deserializer, Deserialize, Serializer, de::Unexpected};
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 crate fn serialize<S>(u: &u64, serializer: S) -> Result<S::Ok, S::Error>
   where S: Serializer,
 {

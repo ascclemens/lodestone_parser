@@ -63,7 +63,7 @@ fn parse_members(html_str: &str) -> Result<Paginated<LinkshellMember>> {
 
   let results: Vec<LinkshellMember> = html
     .select(&*ITEM_ENTRY)
-    .map(|x| parse_single(x))
+    .map(parse_single)
     .collect::<Result<_>>()?;
 
   Ok(Paginated {
@@ -72,8 +72,7 @@ fn parse_members(html_str: &str) -> Result<Paginated<LinkshellMember>> {
   })
 }
 
-
-fn parse_single<'a>(html: ElementRef<'a>) -> Result<LinkshellMember> {
+fn parse_single(html: ElementRef) -> Result<LinkshellMember> {
   let character = super::search::character::parse_single(html)?;
 
   let role = parse_role(html)?;
@@ -84,7 +83,7 @@ fn parse_single<'a>(html: ElementRef<'a>) -> Result<LinkshellMember> {
   })
 }
 
-fn parse_role<'a>(html: ElementRef<'a>) -> Result<Option<Role>> {
+fn parse_role(html: ElementRef) -> Result<Option<Role>> {
   let role = match html.select(&*ITEM_ROLE).next() {
     Some(r) => r,
     None => return Ok(None),
@@ -104,6 +103,7 @@ mod test {
   };
   use super::parse;
 
+  use lazy_static::lazy_static;
   use ffxiv_types::World;
 
   lazy_static! {

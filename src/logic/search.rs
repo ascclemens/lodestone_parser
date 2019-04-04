@@ -66,7 +66,7 @@ crate fn parse_pagination(html: &Html) -> Result<Pagination> {
   })
 }
 
-crate fn parse_no_results<'a>(html: &Html) -> bool {
+crate fn parse_no_results(html: &Html) -> bool {
   html.select(&*NO_RESULTS)
     .next()
     .map(|x| x.text().collect::<String>() == "Your search yielded no results.")

@@ -20,7 +20,7 @@ pub enum Error {
 impl Error {
   pub fn missing_element(select: &scraper::Selector) -> Self {
     use cssparser::ToCss;
-    let css = select.selectors.iter().map(|x| x.to_css_string()).collect::<Vec<_>>().join(" ");
+    let css = select.selectors.iter().map(ToCss::to_css_string).collect::<Vec<_>>().join(" ");
     Error::MissingElement(css)
   }
 

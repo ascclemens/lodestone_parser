@@ -1,12 +1,12 @@
 use super::GrandCompany;
 
+#[cfg(feature = "with_serde")] use serde_derive::{Deserialize, Serialize};
 use ffxiv_types::{World, Race, Clan, Guardian};
-
 use url::Url;
 
 use std::collections::BTreeMap;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct Character {
   pub id: u64,
 
@@ -22,26 +22,28 @@ pub struct Character {
   pub city_state: CityState,
 
   pub grand_company: Option<GrandCompanyInfo>,
-  #[serde(with = "crate::util::serde::opt_u64_str")]
+  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::opt_u64_str"))]
   pub free_company_id: Option<u64>,
 
   pub profile_text: String,
 
   pub jobs: BTreeMap<Job, JobInfo>,
 
-  #[serde(with = "url_serde")]
+  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub face: Url,
-  #[serde(with = "url_serde")]
+  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub portrait: Url,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct GrandCompanyInfo {
   pub name: GrandCompany,
   pub rank: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct JobInfo {
   pub level: Option<u8>,
   pub experience: Option<u64>,

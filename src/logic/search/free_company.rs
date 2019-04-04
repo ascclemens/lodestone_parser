@@ -47,7 +47,7 @@ pub fn parse(s: &str) -> Result<Paginated<FreeCompanySearchItem>> {
 
   let results: Vec<FreeCompanySearchItem> = html
     .select(&*ITEM_ENTRY)
-    .map(|x| parse_single(x))
+    .map(parse_single)
     .collect::<Result<_>>()?;
 
   Ok(Paginated {
@@ -56,7 +56,7 @@ pub fn parse(s: &str) -> Result<Paginated<FreeCompanySearchItem>> {
   })
 }
 
-fn parse_single<'a>(html: ElementRef<'a>) -> Result<FreeCompanySearchItem> {
+fn parse_single(html: ElementRef) -> Result<FreeCompanySearchItem> {
   let id = parse_id(html)?;
   let grand_company = parse_grand_company(html)?;
   let name = plain_parse(html, &*ITEM_NAME)?;
@@ -82,7 +82,7 @@ fn parse_single<'a>(html: ElementRef<'a>) -> Result<FreeCompanySearchItem> {
   })
 }
 
-fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
+fn parse_id(html: ElementRef) -> Result<u64> {
   let e = html
     .select(&*ITEM_ID)
     .next()
@@ -90,31 +90,31 @@ fn parse_id<'a>(html: ElementRef<'a>) -> Result<u64> {
   crate::logic::parse_id(e.value())
 }
 
-fn parse_grand_company<'a>(html: ElementRef<'a>) -> Result<GrandCompany> {
+fn parse_grand_company(html: ElementRef) -> Result<GrandCompany> {
   let gc_str = plain_parse(html, &*ITEM_GRAND_COMPANY)?;
   GrandCompany::parse(&gc_str)
     .ok_or_else(|| Error::invalid_content("valid grand company", Some(&gc_str)))
 }
 
-fn parse_world<'a>(html: ElementRef<'a>) -> Result<World> {
+fn parse_world(html: ElementRef) -> Result<World> {
   let world_str = plain_parse(html, &*ITEM_WORLD)?;
   World::from_str(&world_str)
     .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
 }
 
-fn parse_crest<'a>(html: ElementRef<'a>) -> Result<Vec<Url>> {
+fn parse_crest(html: ElementRef) -> Result<Vec<Url>> {
   html.select(&*ITEM_CREST)
     .filter_map(|x| x.value().attr("src"))
     .map(|x| Url::from_str(x).map_err(Error::InvalidUrl))
     .collect()
 }
 
-fn parse_active_members<'a>(html: ElementRef<'a>) -> Result<u16> {
+fn parse_active_members(html: ElementRef) -> Result<u16> {
   plain_parse(html, &*ITEM_ACTIVE_MEMBERS)
     .and_then(|x| x.parse().map_err(Error::InvalidNumber))
 }
 
-fn parse_estate_built<'a>(html: ElementRef<'a>) -> Result<bool> {
+fn parse_estate_built(html: ElementRef) -> Result<bool> {
   let estate_built = plain_parse(html, &*ITEM_ESTATE_BUILT)?;
   let built = match estate_built.as_str() {
     "Estate Built" => true,
@@ -125,20 +125,20 @@ fn parse_estate_built<'a>(html: ElementRef<'a>) -> Result<bool> {
   Ok(built)
 }
 
-fn parse_formed<'a>(html: ElementRef<'a>) -> Result<DateTime<Utc>> {
+fn parse_formed(html: ElementRef) -> Result<DateTime<Utc>> {
   let script = html
     .select(&*ITEM_FORMED)
     .next()
-    .ok_or(Error::missing_element(&*ITEM_FORMED))?
+    .ok_or_else(|| Error::missing_element(&*ITEM_FORMED))?
     .inner_html();
 
   let timestamp = script
     .split("strftime(")
     .nth(1)
-    .ok_or(Error::invalid_content("strftime call", Some(&script)))?
-    .split(",")
+    .ok_or_else(|| Error::invalid_content("strftime call", Some(&script)))?
+    .split(',')
     .next()
-    .ok_or(Error::invalid_content("comma-separated strftime call", Some(&script)))?;
+    .ok_or_else(|| Error::invalid_content("comma-separated strftime call", Some(&script)))?;
   let timestamp: i64 = timestamp.parse().map_err(Error::InvalidNumber)?;
 
   let utc = Local.timestamp(timestamp, 0).with_timezone(&Utc);
@@ -146,7 +146,7 @@ fn parse_formed<'a>(html: ElementRef<'a>) -> Result<DateTime<Utc>> {
   Ok(utc)
 }
 
-fn parse_active<'a>(html: ElementRef<'a>) -> Result<Active> {
+fn parse_active(html: ElementRef) -> Result<Active> {
   plain_parse(html, &*ITEM_ACTIVE)
     .and_then(|x| x
       .split(": ")
@@ -157,7 +157,7 @@ fn parse_active<'a>(html: ElementRef<'a>) -> Result<Active> {
       .ok_or_else(|| Error::invalid_content("valid activity", Some(&x))))
 }
 
-fn parse_recruitment<'a>(html: ElementRef<'a>) -> Result<RecruitmentStatus> {
+fn parse_recruitment(html: ElementRef) -> Result<RecruitmentStatus> {
   plain_parse(html, &*ITEM_RECRUITMENT)
     .and_then(|x| x
       .split(": ")

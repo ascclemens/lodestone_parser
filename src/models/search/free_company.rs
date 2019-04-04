@@ -1,18 +1,18 @@
 use crate::models::GrandCompany;
 
 use chrono::{DateTime, Utc};
-
 use ffxiv_types::World;
-
+#[cfg(feature = "with_serde")] use serde_derive::{Deserialize, Serialize};
 use url::Url;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct FreeCompanySearchItem {
-  #[serde(with = "crate::util::serde::u64_str")]
+  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::u64_str"))]
   pub id: u64,
   pub name: String,
   pub world: World,
-  #[serde(with = "crate::util::serde::multi_url")]
+  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::multi_url"))]
   pub crest: Vec<Url>,
   pub grand_company: GrandCompany,
   pub active_members: u16,
