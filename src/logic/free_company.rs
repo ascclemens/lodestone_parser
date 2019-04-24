@@ -77,10 +77,12 @@ pub fn parse(id: u64, html: &str) -> Result<FreeCompany> {
 }
 
 fn parse_world(html: &Html) -> Result<World> {
-  let world_str = plain_parse(html, &*FC_WORLD)?;
-  let trimmed = world_str.trim();
-  World::from_str(trimmed)
-    .map_err(|_| Error::invalid_content("a world", Some(trimmed)))
+  let parts_str = plain_parse(html, &*FC_WORLD)?;
+  let mut parts = parts_str.split("\u{00a0}(");
+  let world_str = parts.next()
+    .ok_or_else(|| Error::invalid_content("world with data centre in parens", Some(&parts_str)))?;
+  World::from_str(world_str.trim())
+    .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
 }
 
 fn parse_active_members(html: &Html) -> Result<u16> {

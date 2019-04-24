@@ -40,10 +40,12 @@ pub fn parse(id: u64, html_str: &str) -> Result<Linkshell> {
 }
 
 fn parse_world(html: &Html) -> Result<World> {
-  let world_str = plain_parse(html, &*LS_WORLD)?;
-  let trimmed = world_str.trim();
-  World::from_str(trimmed)
-    .map_err(|_| Error::invalid_content("a world", Some(trimmed)))
+  let parts_str = plain_parse(html, &*LS_WORLD)?;
+  let mut parts = parts_str.split("\u{00a0}(");
+  let world_str = parts.next()
+    .ok_or_else(|| Error::invalid_content("world with data centre in parens", Some(&parts_str)))?;
+  World::from_str(world_str)
+    .map_err(|_| Error::invalid_content("valid world", Some(&world_str)))
 }
 
 fn parse_active_members(html: &Html) -> Result<u8> {
@@ -124,11 +126,11 @@ mod test {
     assert_eq!(20547673299957974, ls.id);
     assert_eq!("lala world", ls.name);
     assert_eq!(World::Adamantoise, ls.world);
-    assert_eq!(110, ls.active_members);
+    assert_eq!(104, ls.active_members);
     assert_eq!(50, ls.members.results.len());
     assert_eq!(1, ls.members.pagination.current_page);
     assert_eq!(3, ls.members.pagination.total_pages);
-    assert_eq!(110, ls.members.pagination.total_results);
+    assert_eq!(104, ls.members.pagination.total_results);
   }
 
   #[test]
@@ -146,7 +148,7 @@ mod test {
     );
     assert_eq!(Some(9233645873504743773), prinny.free_company_id);
     assert_eq!(
-      "https://img2.finalfantasyxiv.com/f/8089bddc032754e155ff2f75925c8c26_1f5fd239b885860b7c2bfc72ad1d97effc0_96x96.jpg?1539579307",
+      "https://img2.finalfantasyxiv.com/f/8089bddc032754e155ff2f75925c8c26_1f5fd239b885860b7c2bfc72ad1d97effc0_96x96.jpg?1556144778",
       prinny.face.as_str(),
     );
     assert_eq!(Some(Role::Master), prinny.role);
