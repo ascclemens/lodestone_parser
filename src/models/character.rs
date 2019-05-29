@@ -91,6 +91,7 @@ ffxiv_enum!(
     Marauder => "marauder",
     Warrior => "warrior",
     DarkKnight => "dark knight",
+    Gunbreaker => "gunbreaker",
     Conjurer => "conjurer",
     WhiteMage => "white mage",
     Scholar => "scholar",
@@ -111,6 +112,7 @@ ffxiv_enum!(
     Summoner => "summoner",
     RedMage => "red mage",
     BlueMage => "blue mage",
+    Dancer => "dancer",
 
     Carpenter => "carpenter",
     Blacksmith => "blacksmith",
