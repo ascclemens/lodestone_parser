@@ -18,34 +18,22 @@ logic = [
 with_serde = [
   "serde",
   "serde_derive",
-  "url_serde",
+  "ffxiv_types/with_serde",
+  "chrono/serde",
+  "url/serde"
 ]
 
 [dependencies]
-cssparser = { version = "0.25", optional = true }
+chrono = "0.4"
+cssparser = { version = "0.27", optional = true }
 failure = { version = "0.1", optional = true }
 lazy_static = { version = "1", optional = true }
-scraper = { version = "0.10", optional = true }
+scraper = { version = "0.12", optional = true }
 serde = { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
-url = "1"
-url_serde = { version = "0.2", optional = true }
+url = "2"
 
-# with serde
-[target.'cfg(feature = "with_serde")'.dependencies.chrono]
-version = "0.4"
-features = ["serde"]
-
-[target.'cfg(feature = "with_serde")'.dependencies.ffxiv_types]
-version = "1"
-default-features = false
-features = ["worlds", "races", "clans", "guardians", "with_serde"]
-
-# without serde
-[target.'cfg(not(feature = "with_serde"))'.dependencies.chrono]
-version = "0.4"
-
-[target.'cfg(not(feature = "with_serde"))'.dependencies.ffxiv_types]
+[dependencies.ffxiv_types]
 version = "1"
 default-features = false
 features = ["worlds", "races", "clans", "guardians"]

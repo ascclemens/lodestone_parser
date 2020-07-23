@@ -12,7 +12,6 @@ pub struct FreeCompanySearchItem {
   pub id: u64,
   pub name: String,
   pub world: World,
-  #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::multi_url"))]
   pub crest: Vec<Url>,
   pub grand_company: GrandCompany,
   pub active_members: u16,

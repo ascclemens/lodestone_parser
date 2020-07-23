@@ -35,9 +35,7 @@ pub struct Character {
   #[cfg_attr(feature = "with_serde", serde(default))]
   pub minions: Vec<Minion>,
 
-  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub face: Url,
-  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub portrait: Url,
 }
 
@@ -60,7 +58,6 @@ pub struct JobInfo {
 #[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct Mount {
   pub name: String,
-  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub icon: Url,
 }
 
@@ -68,7 +65,6 @@ pub struct Mount {
 #[cfg_attr(feature = "with_serde", derive(Deserialize, Serialize))]
 pub struct Minion {
   pub name: String,
-  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub icon: Url,
 }
 

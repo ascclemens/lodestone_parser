@@ -14,6 +14,5 @@ pub struct CharacterSearchItem {
   pub grand_company: Option<GrandCompanyInfo>,
   #[cfg_attr(feature = "with_serde", serde(with = "crate::util::serde::opt_u64_str"))]
   pub free_company_id: Option<u64>,
-  #[cfg_attr(feature = "with_serde", serde(with = "url_serde"))]
   pub face: Url,
 }
